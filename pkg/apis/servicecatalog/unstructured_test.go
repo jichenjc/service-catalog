@@ -28,8 +28,8 @@ import (
 	"github.com/kubernetes-incubator/service-catalog/pkg/apis/servicecatalog/testapi"
 	sctesting "github.com/kubernetes-incubator/service-catalog/pkg/apis/servicecatalog/testing"
 
+	"k8s.io/apimachinery/pkg/api/apitesting/fuzzer"
 	apiequality "k8s.io/apimachinery/pkg/api/equality"
-	"k8s.io/apimachinery/pkg/api/testing/fuzzer"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/util/diff"
 	"k8s.io/apimachinery/pkg/util/json"
@@ -77,6 +77,11 @@ func doUnstructuredRoundTrip(t *testing.T, group testapi.TestGroup, kind string)
 			is.ServiceBindingCreateResponseSchema = nil
 			is.ServiceInstanceCreateParameterSchema = nil
 			is.ServiceInstanceUpdateParameterSchema = nil
+		},
+		func(cs *servicecatalog.CommonServiceClassSpec, c fuzz.Continue) {
+			c.FuzzNoCustom(cs)
+			cs.DefaultProvisionParameters = nil
+			cs.ExternalMetadata = nil
 		},
 		func(bs *servicecatalog.ServiceBindingSpec, c fuzz.Continue) {
 			c.FuzzNoCustom(bs)
